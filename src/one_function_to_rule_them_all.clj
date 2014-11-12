@@ -80,7 +80,37 @@
   ([x y & more] 
    (reduce pred-and (pred-and x y) more)))
 
-(defn my-map
+(defn my-map-inner [f a-seq]
+  (loop [build []
+         r-seq a-seq]
+    (if (empty? r-seq)
+      build
+      (let [fi (first r-seq)
+            r (rest r-seq)]
+        (recur (conj build (apply f fi)) r)))))
+
+(defn my-map [f & more]
+  (let [args (reduce
+               (fn [curr-seq x]
+                 (if (empty? curr-seq)
+                   (loop [build []
+                          r-seq x]
+                     (if (empty? r-seq) build
+                       (recur (conj build [(first r-seq)])
+                              (rest r-seq))))
+                   (loop [build []
+                          f-curr-seq (first curr-seq)
+                          r-curr-seq (rest curr-seq)
+                          r-seq x]
+                     (if (nil? f-curr-seq) build
+                       (recur (conj build (conj f-curr-seq (first r-seq)))
+                              (first r-curr-seq)
+                              (rest r-curr-seq)
+                              (rest r-seq))))))
+               [] more)]
+    (my-map-inner f args)))
+
+(defn my-map2
   ([f & more]
    (let [helper (fn [a-seq]
                   (loop [build []
