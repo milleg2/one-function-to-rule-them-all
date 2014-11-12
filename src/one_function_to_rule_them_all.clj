@@ -110,22 +110,3 @@
                [] more)]
     (my-map-inner f args)))
 
-(defn my-map2
-  ([f & more]
-   (let [helper (fn [a-seq]
-                  (loop [build []
-                         r-seq a-seq]
-                    (if (empty? r-seq) build
-                      (recur (conj build (f (first r-seq)))
-                             (rest r-seq)))))
-         helper2 (fn [init-seq a-seq]
-                   (loop [build []
-                          ri-seq init-seq
-                          r-seq a-seq]
-                     (if (empty? r-seq) build
-                       (recur (conj build (f (first ri-seq)
-                                             (first r-seq)))
-                              (rest ri-seq)
-                              (rest r-seq)))))]
-     (reduce helper2 (helper (first more)) (rest more)))))
-
